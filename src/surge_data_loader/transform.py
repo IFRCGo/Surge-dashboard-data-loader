@@ -45,6 +45,24 @@ GENERIC_FUZZY_EVENT_TAGS = {
     "MEMBER",
 }
 
+GENERIC_EVENT_NAME_PREFIXES = GENERIC_FUZZY_EVENT_TAGS | {
+    "ARABIC",
+    "ENGLISH",
+    "FRENCH",
+    "JAPANESE",
+    "LITHUANIAN",
+    "MYANMAR",
+    "OLD",
+    "PORTUGUESE",
+    "RUSSIAN",
+    "SPANISH",
+    "SWEDISH",
+    "TARGETED",
+    "UKRAINIAN",
+    "WEBINAR",
+    "WORKSHOP",
+}
+
 
 @dataclass
 class OrganizationLookup:
@@ -89,6 +107,7 @@ def transform_event(
         "event_id": event_id,
         "event_name": event_name,
         "event_tag_name": best_event_tag_name(event_name, event_tags),
+        "event_tag_name_N": event_tag_name_from_name(event_name),
         "event_type": display_value(event.get("type") or event.get("event_type")),
         "event_scale_type": display_value(event.get("scale_type") or event.get("event_scale_type")),
         "event_from": display_value(event.get("from") or event.get("event_from") or event.get("start")),
@@ -241,6 +260,35 @@ def best_event_tag_name(event_name: Any, tags: list[dict[str, Any]]) -> str | No
                 return tag_name
 
     return best_fuzzy_event_tag_name(normalized_event_name, tags)
+
+
+def event_tag_name_from_name(event_name: Any) -> str | None:
+    text = normalize_text(event_name)
+    if not text:
+        return None
+
+    leading_match = re.match(r"^([A-Z][A-Z0-9/-]{1,14})\s*(?:-|–|—|:)\s+\S+", text)
+    if leading_match:
+        candidate = leading_match.group(1).strip("/-")
+        if is_likely_event_code(candidate):
+            return candidate
+
+    parenthetical_matches = re.findall(r"\(([A-Z][A-Z0-9/-]{1,14})\)", text)
+    for candidate in parenthetical_matches:
+        if is_likely_event_code(candidate):
+            return candidate
+
+    return None
+
+
+def is_likely_event_code(candidate: str) -> bool:
+    if not candidate or candidate in GENERIC_EVENT_NAME_PREFIXES:
+        return False
+    if candidate in EVENT_TAG_STOPWORDS:
+        return False
+    if len(candidate) > 8 and "/" not in candidate and "-" not in candidate:
+        return False
+    return bool(re.search(r"[A-Z]", candidate))
 
 
 def best_fuzzy_event_tag_name(normalized_event_name: str, tags: list[dict[str, Any]]) -> str | None:

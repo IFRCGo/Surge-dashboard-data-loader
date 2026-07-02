@@ -3,6 +3,7 @@ from surge_data_loader.transform import (
     build_organization_lookup,
     collect_person_ids,
     enrich_person,
+    event_tag_name_from_name,
     extract_sex_or_gender,
     transform_event,
 )
@@ -56,6 +57,7 @@ def test_event_transform_keeps_participants_nested_and_uses_pivot():
     assert output["event_id"] == 7412
     assert output["event_updated_at"] == "2026-07-02T12:00:00.000000Z"
     assert output["event_tag_name"] == "PECT"
+    assert output["event_tag_name_N"] is None
     assert "event_tags" not in output
     assert output["participants"] == [
         {
@@ -174,3 +176,19 @@ def test_best_event_tag_name_fuzzy_ignores_generic_tags():
         )
         is None
     )
+
+
+def test_event_tag_name_from_name_extracts_leading_code():
+    assert event_tag_name_from_name("MOT - Managing IFRC Operations") == "MOT"
+
+
+def test_event_tag_name_from_name_extracts_parenthetical_code():
+    assert event_tag_name_from_name("Emergency Team Leader (ETL) training 2023") == "ETL"
+
+
+def test_event_tag_name_from_name_ignores_plain_titles():
+    assert event_tag_name_from_name("Emergency WASH Training, Fiji") is None
+
+
+def test_event_tag_name_from_name_ignores_language_prefixes():
+    assert event_tag_name_from_name("Spanish - Emergency response training") is None
