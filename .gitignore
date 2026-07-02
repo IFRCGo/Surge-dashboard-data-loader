@@ -12,4 +12,3 @@ build/
 *.egg-info/
 data/powerbi/*.tmp
 data/powerbi/*.log
-data/powerbi/*.json
