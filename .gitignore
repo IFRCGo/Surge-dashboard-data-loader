@@ -1,0 +1,15 @@
+.env
+PLAN.md
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.uv-cache/
+dist/
+build/
+*.egg-info/
+data/powerbi/*.tmp
+data/powerbi/*.log
+data/powerbi/*.json
