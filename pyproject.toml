@@ -1,0 +1,15 @@
+[project]
+name = "surge-data-loader"
+version = "0.1.0"
+description = "Sanitized RRMS/Molnix event loader for Power BI JSON outputs."
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
