@@ -31,19 +31,6 @@ jobs:
           RRMS_REQUEST_RETRIES: "5"
         run: uv run python scripts/build_powerbi_json.py --all-pages --incremental --verbose --person-workers 4
 
-      - name: Fetch training metrics if configured
-        env:
-          TRAINING_METRICS_API_TOKEN: ${{ secrets.TRAINING_METRICS_API_TOKEN }}
-          TRAINING_METRICS_URL: https://rrms.staging.molnix.com/api/api/v1/training-metrics
-          RRMS_REQUEST_RETRIES: "5"
-        shell: bash
-        run: |
-          if [ -z "$TRAINING_METRICS_API_TOKEN" ]; then
-            echo "TRAINING_METRICS_API_TOKEN is not configured; skipping training metrics."
-            exit 0
-          fi
-          uv run python scripts/fetch_training_metrics.py --verbose
-
       - name: Validate output sizes
         shell: bash
         run: |
