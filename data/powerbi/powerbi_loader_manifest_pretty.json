@@ -1,0 +1,12 @@
+{
+  "started_at": "2026-07-02T15:17:18Z",
+  "finished_at": "2026-07-02T15:31:39Z",
+  "event_pages_fetched": 339,
+  "events_processed": 5085,
+  "participant_links_written_inside_events": 208951,
+  "unique_person_ids_enriched": 6796,
+  "organizations_loaded": 204,
+  "personal_fields_saved": false,
+  "output_file": "data/powerbi/powerbi_training_events.json",
+  "errors": []
+}
