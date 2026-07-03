@@ -1,5 +1,7 @@
 .env
 PLAN.md
+AGENTS.md
+.vscode/settings.json
 .venv/
 __pycache__/
 *.pyc
