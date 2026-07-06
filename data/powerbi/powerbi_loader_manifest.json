@@ -1,45 +1,56 @@
 {
-  "started_at": "2026-07-06T14:08:17Z",
-  "finished_at": "2026-07-06T14:17:50Z",
-  "event_pages_fetched": 142,
-  "events_processed": 5085,
-  "existing_events_loaded": 5085,
-  "events_added": 0,
-  "events_replaced": 2079,
-  "events_skipped_existing": 51,
-  "incremental": true,
-  "stopped_after_existing_page": true,
-  "participant_links_written_inside_events": 209045,
-  "unique_person_ids_enriched": 3071,
+  "started_at": "2026-07-06T15:28:43Z",
+  "finished_at": "2026-07-06T15:28:43Z",
+  "event_pages_fetched": 339,
+  "events_processed": 5076,
+  "existing_events_loaded": 0,
+  "events_added": 5076,
+  "events_replaced": 0,
+  "events_skipped_existing": 0,
+  "incremental": false,
+  "stopped_after_existing_page": false,
+  "duplicate_events_removed": 9,
+  "duplicate_event_ids_removed": [
+    9022,
+    8991,
+    8961,
+    8872,
+    8571,
+    8106,
+    7867,
+    7672,
+    7566
+  ],
+  "participant_links_written_inside_events": 209012,
+  "unique_person_ids_enriched": 6796,
   "organizations_loaded": 204,
   "personal_fields_saved": false,
   "output_schema_version": 2,
   "output_file": "data/powerbi/powerbi_training_events.json",
-  "errors": [],
   "participant_role_counts": {
-    "participant": 209044,
+    "participant": 209011,
     "trainer": 1
   },
   "non_participant_role_links": 1,
   "dashboard_summary": {
     "schema_version": 1,
     "cards": {
-      "trainings": 5085,
+      "trainings": 5076,
       "people_trained": 6796,
-      "participant_links": 209045,
-      "avg_participant_links_per_training": 41.11,
-      "avg_unique_people_per_training": 41.11
+      "participant_links": 209012,
+      "avg_participant_links_per_training": 41.18,
+      "avg_unique_people_per_training": 41.18
     },
     "visuals": {
       "participants_by_gender": [
         {
           "gender": "male",
-          "participant_links": 74405,
+          "participant_links": 74393,
           "unique_people": 2159
         },
         {
           "gender": "female",
-          "participant_links": 59619,
+          "participant_links": 59615,
           "unique_people": 1608
         },
         {
@@ -56,27 +67,27 @@
       "participants_by_region": [
         {
           "region": "Europe Region",
-          "participant_links": 52730,
+          "participant_links": 52722,
           "unique_people": 1440
         },
         {
           "region": "Asia Pacific Region",
-          "participant_links": 35817,
+          "participant_links": 35814,
           "unique_people": 1132
         },
         {
           "region": "Americas Region",
-          "participant_links": 32383,
+          "participant_links": 32381,
           "unique_people": 940
         },
         {
           "region": "Africa Region",
-          "participant_links": 29475,
+          "participant_links": 29471,
           "unique_people": 1119
         },
         {
           "region": "Middle East and North Africa Region",
-          "participant_links": 10495,
+          "participant_links": 10493,
           "unique_people": 315
         }
       ],
@@ -88,17 +99,17 @@
         },
         {
           "subregion": "South Asia",
-          "participant_links": 10299,
+          "participant_links": 10298,
           "unique_people": 264
         },
         {
           "subregion": "Southeast Asia",
-          "participant_links": 7646,
+          "participant_links": 7645,
           "unique_people": 181
         },
         {
           "subregion": "South America",
-          "participant_links": 7159,
+          "participant_links": 7158,
           "unique_people": 220
         },
         {
@@ -123,7 +134,7 @@
         },
         {
           "subregion": "The Caribbean",
-          "participant_links": 1797,
+          "participant_links": 1796,
           "unique_people": 42
         },
         {
@@ -155,7 +166,7 @@
         },
         {
           "sending_organisation": "IFRC Asia Pacific",
-          "participant_links": 8848,
+          "participant_links": 8846,
           "unique_people": 178
         },
         {
@@ -165,17 +176,17 @@
         },
         {
           "sending_organisation": "IFRC Geneva",
-          "participant_links": 5513,
+          "participant_links": 5510,
           "unique_people": 124
         },
         {
           "sending_organisation": "IFRC Africa",
-          "participant_links": 4813,
+          "participant_links": 4812,
           "unique_people": 154
         },
         {
           "sending_organisation": "British Red Cross",
-          "participant_links": 4668,
+          "participant_links": 4667,
           "unique_people": 117
         },
         {
@@ -185,7 +196,7 @@
         },
         {
           "sending_organisation": "IFRC MENA",
-          "participant_links": 3816,
+          "participant_links": 3815,
           "unique_people": 99
         },
         {
@@ -195,7 +206,7 @@
         },
         {
           "sending_organisation": "IFRC Europe",
-          "participant_links": 3712,
+          "participant_links": 3710,
           "unique_people": 83
         },
         {
@@ -215,12 +226,12 @@
         },
         {
           "sending_organisation": "IFRC Americas",
-          "participant_links": 2678,
+          "participant_links": 2677,
           "unique_people": 70
         },
         {
           "sending_organisation": "Italian Red Cross",
-          "participant_links": 2501,
+          "participant_links": 2500,
           "unique_people": 52
         },
         {
@@ -265,7 +276,7 @@
         },
         {
           "sending_organisation": "Swiss Red Cross",
-          "participant_links": 1584,
+          "participant_links": 1583,
           "unique_people": 47
         },
         {
@@ -460,7 +471,7 @@
         },
         {
           "sending_organisation": "Ethiopia Red Cross",
-          "participant_links": 414,
+          "participant_links": 413,
           "unique_people": 20
         },
         {
@@ -520,7 +531,7 @@
         },
         {
           "sending_organisation": "Luxembourg Red Cross",
-          "participant_links": 329,
+          "participant_links": 328,
           "unique_people": 9
         },
         {
@@ -635,7 +646,7 @@
         },
         {
           "sending_organisation": "Indian Red Cross Society",
-          "participant_links": 206,
+          "participant_links": 205,
           "unique_people": 10
         },
         {
@@ -1042,59 +1053,59 @@
       "participants_by_organisation_type": [
         {
           "organisation_type": "National Society",
-          "participant_links": 107319,
+          "participant_links": 107313,
           "unique_people": 3475
         },
         {
           "organisation_type": "IFRC",
-          "participant_links": 29380,
+          "participant_links": 29370,
           "unique_people": 708
         },
         {
           "organisation_type": "Other",
-          "participant_links": 72346,
+          "participant_links": 72329,
           "unique_people": 2613
         }
       ],
       "participants_by_language": [
         {
           "language": "English",
-          "participant_links": 100554,
+          "participant_links": 100543,
           "unique_people": 2632
         },
         {
           "language": "French",
-          "participant_links": 49423,
+          "participant_links": 49419,
           "unique_people": 1236
         },
         {
           "language": "Spanish",
-          "participant_links": 38157,
+          "participant_links": 38155,
           "unique_people": 865
         },
         {
           "language": "Arabic",
-          "participant_links": 15859,
+          "participant_links": 15858,
           "unique_people": 422
         },
         {
           "language": "German",
-          "participant_links": 13077,
+          "participant_links": 13076,
           "unique_people": 303
         },
         {
           "language": "Portuguese",
-          "participant_links": 9074,
+          "participant_links": 9072,
           "unique_people": 217
         },
         {
           "language": "Italian",
-          "participant_links": 7206,
+          "participant_links": 7205,
           "unique_people": 150
         },
         {
           "language": "Russian",
-          "participant_links": 5714,
+          "participant_links": 5712,
           "unique_people": 146
         },
         {
@@ -1119,7 +1130,7 @@
         },
         {
           "language": "Hindi",
-          "participant_links": 3539,
+          "participant_links": 3538,
           "unique_people": 105
         },
         {
@@ -1154,7 +1165,7 @@
         },
         {
           "language": "Malay (macrolanguage)",
-          "participant_links": 1973,
+          "participant_links": 1972,
           "unique_people": 47
         },
         {
@@ -1169,7 +1180,7 @@
         },
         {
           "language": "Hungarian",
-          "participant_links": 1689,
+          "participant_links": 1688,
           "unique_people": 34
         },
         {
@@ -1219,7 +1230,7 @@
         },
         {
           "language": "Amharic",
-          "participant_links": 717,
+          "participant_links": 715,
           "unique_people": 27
         },
         {
@@ -1253,11 +1264,6 @@
           "unique_people": 12
         },
         {
-          "language": "Adangme",
-          "participant_links": 572,
-          "unique_people": 18
-        },
-        {
           "language": "Croatian",
           "participant_links": 572,
           "unique_people": 17
@@ -1266,6 +1272,11 @@
           "language": "Shona",
           "participant_links": 572,
           "unique_people": 19
+        },
+        {
+          "language": "Adangme",
+          "participant_links": 571,
+          "unique_people": 18
         },
         {
           "language": "Adyghe",
@@ -1289,7 +1300,7 @@
         },
         {
           "language": "Gujarati",
-          "participant_links": 413,
+          "participant_links": 412,
           "unique_people": 6
         },
         {
@@ -1653,14 +1664,14 @@
           "unique_people": 2
         },
         {
-          "language": "Oromo",
-          "participant_links": 71,
-          "unique_people": 5
-        },
-        {
           "language": "Sango",
           "participant_links": 71,
           "unique_people": 1
+        },
+        {
+          "language": "Oromo",
+          "participant_links": 70,
+          "unique_people": 5
         },
         {
           "language": "Ganda",
@@ -2545,7 +2556,7 @@
       "participants_by_role": [
         {
           "role": "participant",
-          "participant_links": 209044,
+          "participant_links": 209011,
           "unique_people": 6796
         },
         {
@@ -2557,7 +2568,7 @@
       "trainings_by_event_type": [
         {
           "event_type": "ondemand",
-          "event_count": 5030,
+          "event_count": 5021,
           "unique_events": 5021
         },
         {
@@ -3294,11 +3305,12 @@
   "model_file": "data/powerbi/trainings_facilitator_model.json",
   "model_schema_version": 1,
   "model_counts": {
-    "events": 5085,
-    "participants": 209045,
-    "participant_languages": 313242,
+    "events": 5076,
+    "participants": 209012,
+    "participant_languages": 313210,
     "participant_training_tags": 34827,
     "training_tag_categories": 5,
     "organisation_type_categories": 3
-  }
+  },
+  "errors": []
 }
