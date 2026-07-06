@@ -121,8 +121,11 @@ def run_loader(
         transform_event(event, person_enrichment=person_enrichment)
         for event in raw_events
     ]
-    output_events = merge_events(existing_events, transformed_events) if incremental else transformed_events
+    merged_events = merge_events(existing_events, transformed_events) if incremental else transformed_events
+    output_events, duplicate_event_ids = deduplicate_events_by_id(merged_events)
     manifest["events_processed"] = len(output_events)
+    manifest["duplicate_events_removed"] = len(merged_events) - len(output_events)
+    manifest["duplicate_event_ids_removed"] = duplicate_event_ids
     manifest["participant_links_written_inside_events"] = count_participant_links(output_events)
     role_counts = count_roles(output_events)
     manifest["participant_role_counts"] = dict(sorted(role_counts.items()))
@@ -190,6 +193,21 @@ def merge_events(
                 seen_ids.add(event_id)
 
     return sorted(merged, key=event_sort_key, reverse=True)
+
+
+def deduplicate_events_by_id(events: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[int]]:
+    deduplicated: list[dict[str, Any]] = []
+    seen_ids: set[int] = set()
+    duplicate_ids: list[int] = []
+    for event in events:
+        event_id = event_identity(event)
+        if event_id is not None:
+            if event_id in seen_ids:
+                duplicate_ids.append(event_id)
+                continue
+            seen_ids.add(event_id)
+        deduplicated.append(event)
+    return deduplicated, duplicate_ids
 
 
 def event_changed(raw_event: dict[str, Any], existing_event: dict[str, Any]) -> bool:
