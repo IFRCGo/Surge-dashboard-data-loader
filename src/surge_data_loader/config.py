@@ -27,7 +27,6 @@ class LoaderConfig:
 @dataclass(frozen=True)
 class TrainingMetricsConfig:
     url: str = DEFAULT_TRAINING_METRICS_URL
-    api_token: str = ""
     request_timeout: float = 30.0
     request_retries: int = 5
 
@@ -99,13 +98,6 @@ def config_from_env() -> LoaderConfig:
 
 
 def training_metrics_config_from_env() -> TrainingMetricsConfig:
-    api_token = os.getenv("TRAINING_METRICS_API_TOKEN")
-    if not api_token:
-        raise RuntimeError(
-            "Missing required environment variable: TRAINING_METRICS_API_TOKEN. "
-            "Put it in a local .env file or GitHub repository secrets."
-        )
-
     timeout_raw = os.getenv("RRMS_REQUEST_TIMEOUT", "30")
     try:
         timeout = float(timeout_raw)
@@ -122,7 +114,6 @@ def training_metrics_config_from_env() -> TrainingMetricsConfig:
 
     return TrainingMetricsConfig(
         url=os.getenv("TRAINING_METRICS_URL", DEFAULT_TRAINING_METRICS_URL),
-        api_token=api_token,
         request_timeout=timeout,
         request_retries=request_retries,
     )

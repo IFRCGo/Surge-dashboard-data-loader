@@ -3,7 +3,8 @@ from __future__ import annotations
 import argparse
 import sys
 
-from .config import load_dotenv, training_metrics_config_from_env
+from .client import RRMSClient
+from .config import config_from_env, load_dotenv, training_metrics_config_from_env
 from .training_metrics import run_training_metrics_fetch
 
 
@@ -20,8 +21,11 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     load_dotenv()
     try:
+        rrms_config = config_from_env()
         config = training_metrics_config_from_env()
-        manifest = run_training_metrics_fetch(config, verbose=args.verbose)
+        rrms_client = RRMSClient(rrms_config, verbose=args.verbose)
+        access_token = rrms_client.login()
+        manifest = run_training_metrics_fetch(config, access_token=access_token, verbose=args.verbose)
     except RuntimeError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 2

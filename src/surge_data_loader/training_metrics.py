@@ -22,33 +22,56 @@ class TrainingMetricsError(RuntimeError):
     """Raised when the training metrics endpoint returns an unusable response."""
 
 
-def fetch_training_metrics(config: TrainingMetricsConfig, *, verbose: bool = False) -> Any:
-    headers = {
-        "Accept": "application/json",
-        "Api-Token": config.api_token,
-    }
-    request = Request(config.url, headers=headers, method="GET")
-    raw = send_with_retries(
-        request,
-        method="GET",
-        url=config.url,
-        timeout=config.request_timeout,
-        retries=config.request_retries,
-        verbose=verbose,
-    )
-    try:
-        return json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise TrainingMetricsError(f"GET {config.url} did not return valid JSON.") from exc
+AUTH_HEADER_VARIANTS = (
+    ("Authorization", lambda token: f"Bearer {token}"),
+    ("Authorization", lambda token: f"Token {token}"),
+    ("Api-Token", lambda token: token),
+)
+
+
+def fetch_training_metrics(
+    config: TrainingMetricsConfig,
+    *,
+    access_token: str,
+    verbose: bool = False,
+) -> Any:
+    last_error: Exception | None = None
+    for header_name, header_value_factory in AUTH_HEADER_VARIANTS:
+        headers = {
+            "Accept": "application/json",
+            header_name: header_value_factory(access_token),
+        }
+        request = Request(config.url, headers=headers, method="GET")
+        try:
+            raw = send_with_retries(
+                request,
+                method="GET",
+                url=config.url,
+                timeout=config.request_timeout,
+                retries=config.request_retries,
+                verbose=verbose,
+            )
+            return json.loads(raw)
+        except (TrainingMetricsError, json.JSONDecodeError) as exc:
+            last_error = exc
+            if verbose:
+                print(f"Training metrics auth variant {header_name} failed: {exc}")
+
+    if isinstance(last_error, json.JSONDecodeError):
+        raise TrainingMetricsError(f"GET {config.url} did not return valid JSON.") from last_error
+    raise TrainingMetricsError(
+        f"GET {config.url} failed for all auth header variants using the RRMS login token."
+    ) from last_error
 
 
 def run_training_metrics_fetch(
     config: TrainingMetricsConfig,
     *,
+    access_token: str,
     verbose: bool = False,
 ) -> dict[str, Any]:
     started_at = now_utc()
-    payload = fetch_training_metrics(config, verbose=verbose)
+    payload = fetch_training_metrics(config, access_token=access_token, verbose=verbose)
     validate_no_forbidden_fields(payload)
 
     manifest = {
