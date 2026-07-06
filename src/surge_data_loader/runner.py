@@ -21,7 +21,9 @@ from .transform import (
 OUTPUT_DIR = Path("data/powerbi")
 EVENTS_OUTPUT = OUTPUT_DIR / "powerbi_training_events.json"
 MANIFEST_OUTPUT = OUTPUT_DIR / "powerbi_loader_manifest.json"
+TRAININGS_FACILITATOR_MODEL_OUTPUT = OUTPUT_DIR / "trainings_facilitator_model.json"
 OUTPUT_SCHEMA_VERSION = 2
+MODEL_SCHEMA_VERSION = 1
 REQUIRED_PARTICIPANT_FIELDS = {
     "subregion_tag",
     "subregion_label",
@@ -131,11 +133,16 @@ def run_loader(
     )
     manifest["unique_person_ids_enriched"] = len(person_enrichment)
     manifest["dashboard_summary"] = build_dashboard_summary(output_events)
+    model = build_trainings_facilitator_model(output_events)
+    manifest["model_file"] = str(TRAININGS_FACILITATOR_MODEL_OUTPUT).replace("\\", "/")
+    manifest["model_schema_version"] = MODEL_SCHEMA_VERSION
+    manifest["model_counts"] = model_table_counts(model)
     manifest["finished_at"] = now_utc()
 
     validate_no_forbidden_fields(output_events)
     validate_no_forbidden_fields(manifest)
-    write_json_outputs(output_events, manifest)
+    validate_no_forbidden_fields(model)
+    write_json_outputs(output_events, manifest, model)
     return manifest
 
 
@@ -430,6 +437,163 @@ def build_dashboard_summary(events: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def build_trainings_facilitator_model(events: list[dict[str, Any]]) -> dict[str, Any]:
+    event_rows_data: list[list[Any]] = []
+    participant_rows: list[list[Any]] = []
+    participant_language_rows: list[list[Any]] = []
+    participant_training_tag_rows: list[list[Any]] = []
+
+    participation_index = 0
+    for event in events:
+        event_id = event.get("event_id")
+        event_training_type = event.get("event_tag_name") or event.get("event_tag_name_N")
+        event_rows_data.append(
+            [
+                event_id,
+                event.get("event_name"),
+                event_training_type,
+                event.get("event_type"),
+                event.get("event_from"),
+                event.get("event_to"),
+                event.get("event_venue"),
+                event.get("event_organization"),
+            ]
+        )
+
+        for participant in event.get("participants", []) or []:
+            if not isinstance(participant, dict):
+                continue
+            participation_index += 1
+            person_id = participant.get("person_id")
+            participation_id = participation_index
+            participant_date = (
+                participant.get("participant_start")
+                or participant.get("participant_end")
+                or event.get("event_from")
+                or event.get("event_to")
+            )
+            participant_rows.append(
+                [
+                    participation_id,
+                    event_id,
+                    person_id,
+                    participant.get("role"),
+                    participant_date,
+                    participant.get("sex_or_gender"),
+                    participant.get("region_label"),
+                    participant.get("subregion_label"),
+                    sending_organization(participant),
+                    organization_type(participant),
+                ]
+            )
+
+            for language_name in participant.get("language_names", []) or []:
+                language_name = clean_group_value(language_name)
+                if not language_name:
+                    continue
+                participant_language_rows.append([participation_id, language_name])
+
+            for training_tag in participant.get("person_training_tags", []) or []:
+                training_tag = clean_group_value(training_tag)
+                if training_tag not in REFERENCE_TRAINING_TAGS:
+                    continue
+                participant_training_tag_rows.append([participation_id, training_tag])
+
+    return {
+        "schema_version": MODEL_SCHEMA_VERSION,
+        "description": (
+            "Narrow Power BI model tables derived from powerbi_training_events.json. "
+            "Use this file for filter-responsive visuals without expanding the large nested JSON."
+        ),
+        "relationships": [
+            {
+                "from_table": "participants",
+                "from_column": "event_id",
+                "to_table": "events",
+                "to_column": "event_id",
+                "cardinality": "many_to_one",
+            },
+            {
+                "from_table": "participant_languages",
+                "from_column": "participation_id",
+                "to_table": "participants",
+                "to_column": "participation_id",
+                "cardinality": "many_to_one",
+            },
+            {
+                "from_table": "participant_training_tags",
+                "from_column": "participation_id",
+                "to_table": "participants",
+                "to_column": "participation_id",
+                "cardinality": "many_to_one",
+            },
+        ],
+        "tables": {
+            "events": model_table(
+                [
+                    "event_id",
+                    "event_name",
+                    "event_training_type",
+                    "event_type",
+                    "event_from",
+                    "event_to",
+                    "event_venue",
+                    "event_organization",
+                ],
+                event_rows_data,
+            ),
+            "participants": model_table(
+                [
+                    "participation_id",
+                    "event_id",
+                    "person_id",
+                    "role",
+                    "participant_date",
+                    "sex_or_gender",
+                    "region_label",
+                    "subregion_label",
+                    "sending_organisation",
+                    "organisation_type",
+                ],
+                participant_rows,
+            ),
+            "participant_languages": model_table(
+                ["participation_id", "language_name"],
+                participant_language_rows,
+            ),
+            "participant_training_tags": model_table(
+                ["participation_id", "person_training_tag"],
+                participant_training_tag_rows,
+            ),
+            "training_tag_categories": model_table(
+                ["person_training_tag"],
+                [[tag] for tag in REFERENCE_TRAINING_TAGS],
+            ),
+            "organisation_type_categories": model_table(
+                ["organisation_type"],
+                [[label] for label in ORGANISATION_TYPE_LABELS],
+            ),
+        },
+    }
+
+
+def model_table(columns: list[str], rows: list[list[Any]]) -> dict[str, Any]:
+    return {"columns": columns, "rows": rows}
+
+
+def model_table_counts(model: dict[str, Any]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    tables = model.get("tables", {})
+    if not isinstance(tables, dict):
+        return counts
+    for table_name, table in tables.items():
+        if isinstance(table, dict) and isinstance(table.get("rows"), list):
+            counts[table_name] = len(table["rows"])
+        elif isinstance(table, list):
+            counts[table_name] = len(table)
+    return counts
+
+
 def grouped_counter() -> dict[str, dict[str, Any]]:
     return defaultdict(lambda: {"participant_links": 0, "people": set()})
 
@@ -542,15 +706,25 @@ def as_int_value(value: Any) -> int | None:
         return None
 
 
-def write_json_outputs(events: list[dict[str, Any]], manifest: dict[str, Any]) -> None:
+def write_json_outputs(
+    events: list[dict[str, Any]],
+    manifest: dict[str, Any],
+    model: dict[str, Any] | None = None,
+) -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     sparse_events = sparse_json_value(events)
+    if model is None:
+        model = build_trainings_facilitator_model(events)
     EVENTS_OUTPUT.write_text(
         json.dumps(sparse_events, ensure_ascii=False, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
     MANIFEST_OUTPUT.write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    TRAININGS_FACILITATOR_MODEL_OUTPUT.write_text(
+        json.dumps(model, ensure_ascii=False, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
 

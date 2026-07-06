@@ -20,6 +20,7 @@ Primary Power BI outputs:
 ```text
 data/powerbi/powerbi_training_events.json
 data/powerbi/powerbi_loader_manifest.json
+data/powerbi/trainings_facilitator_model.json
 ```
 
 `powerbi_training_events.json` contains the event-organized dashboard data.
@@ -28,6 +29,10 @@ data/powerbi/powerbi_loader_manifest.json
 events processed, participant links written, enrichment counts, output path,
 incremental-refresh counts, role counts, dashboard summary tables, slicer values,
 and any errors.
+
+`trainings_facilitator_model.json` contains narrow Power BI model tables for
+filter-responsive visuals without expanding the large nested event JSON in
+Power BI.
 
 The production event JSON is intentionally minified and omits empty/null fields. Power BI can load compact JSON normally, and the smaller file is easier to store in GitHub.
 
@@ -109,6 +114,50 @@ For the reference participant visuals:
 
 - `participants_by_organisation_type` uses `National Society`, `IFRC`, and `Other`. Participants without a matched National Society or IFRC organisation are counted as `Other`.
 - `participants_by_person_training_tag` is limited to the five overview categories parsed from person tag groups `training` and `Surge Trainings`: `Induction`, `CAP`, `ETL`, `MOT`, and `TAF`.
+
+## Power BI Model Output
+
+Use `data/powerbi/trainings_facilitator_model.json` for interactive Power BI
+reports. It contains:
+
+```text
+tables.events
+tables.participants
+tables.participant_languages
+tables.participant_training_tags
+tables.training_tag_categories
+tables.organisation_type_categories
+```
+
+Each table uses a compact shape:
+
+```json
+{
+  "columns": ["participation_id", "event_id", "person_id"],
+  "rows": [[1, 7412, 5603]]
+}
+```
+
+In Power Query, convert each table's `rows` list into a table using the matching
+`columns` list as headers. This avoids repeating field names hundreds of
+thousands of times in JSON.
+
+Recommended relationships:
+
+```text
+participants[event_id] many-to-one events[event_id]
+participant_languages[participation_id] many-to-one participants[participation_id]
+participant_training_tags[participation_id] many-to-one participants[participation_id]
+```
+
+Useful measures:
+
+```DAX
+Participant Links = COUNTROWS(participants)
+People Trained = DISTINCTCOUNT(participants[person_id])
+Trainings = DISTINCTCOUNT(events[event_id])
+Average Participants Per Training = DIVIDE([Participant Links], [Trainings])
+```
 
 ## Endpoints Used
 

@@ -42,6 +42,7 @@ jobs:
           files=(
             data/powerbi/powerbi_training_events.json
             data/powerbi/powerbi_loader_manifest.json
+            data/powerbi/trainings_facilitator_model.json
           )
           for file in "${files[@]}"; do
             if [ ! -f "$file" ]; then
@@ -62,18 +63,28 @@ jobs:
 
           events_path = Path("data/powerbi/powerbi_training_events.json")
           manifest_path = Path("data/powerbi/powerbi_loader_manifest.json")
+          model_path = Path("data/powerbi/trainings_facilitator_model.json")
           events = json.loads(events_path.read_text(encoding="utf-8"))
           manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          model = json.loads(model_path.read_text(encoding="utf-8"))
           if not isinstance(events, list):
               raise SystemExit("powerbi_training_events.json must be a JSON array.")
           if not isinstance(manifest, dict):
               raise SystemExit("powerbi_loader_manifest.json must be a JSON object.")
+          if not isinstance(model, dict):
+              raise SystemExit("trainings_facilitator_model.json must be a JSON object.")
           if "dashboard_summary" not in manifest:
               raise SystemExit("powerbi_loader_manifest.json is missing dashboard_summary.")
           if "participant_role_counts" not in manifest:
               raise SystemExit("powerbi_loader_manifest.json is missing participant_role_counts.")
+          if "tables" not in model:
+              raise SystemExit("trainings_facilitator_model.json is missing tables.")
+          for table_name, table in model["tables"].items():
+              if not isinstance(table, dict) or "columns" not in table or "rows" not in table:
+                  raise SystemExit(f"{table_name} must have columns and rows.")
           validate_no_forbidden_fields(events)
           validate_no_forbidden_fields(manifest)
+          validate_no_forbidden_fields(model)
           PY
 
       - name: Commit updated JSON outputs
@@ -82,7 +93,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f \
             data/powerbi/powerbi_training_events.json \
-            data/powerbi/powerbi_loader_manifest.json
+            data/powerbi/powerbi_loader_manifest.json \
+            data/powerbi/trainings_facilitator_model.json
           if git diff --cached --quiet; then
             echo "No JSON changes to commit."
             exit 0

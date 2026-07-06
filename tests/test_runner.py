@@ -1,5 +1,6 @@
 from surge_data_loader.runner import (
     build_dashboard_summary,
+    build_trainings_facilitator_model,
     event_changed,
     merge_events,
     sparse_json_value,
@@ -123,6 +124,99 @@ def test_build_dashboard_summary_includes_visuals_and_slicers():
     assert summary["slicers"]["language"] == ["English", "French", "Spanish"]
     assert summary["slicers"]["event_role"] == ["participant", "trainer"]
     assert summary["slicers"]["time"]["years"] == ["2024"]
+
+
+def test_build_trainings_facilitator_model_has_filterable_tables():
+    model = build_trainings_facilitator_model(
+        [
+            {
+                "event_id": 1,
+                "event_name": "MOT - Managing IFRC Operations",
+                "event_tag_name": "MOT",
+                "event_type": "scheduled",
+                "event_from": "2024-01-01T00:00:00Z",
+                "participants": [
+                    {
+                        "person_id": 10,
+                        "role": "participant",
+                        "participant_start": "2024-01-02T00:00:00Z",
+                        "sex_or_gender": "female",
+                        "region_label": "Europe Region",
+                        "subregion_label": "South Europe",
+                        "matched_organization_name": "The Netherlands Red Cross",
+                        "national_society_name": "The Netherlands Red Cross",
+                        "language_names": ["English", "French"],
+                        "person_training_tags": ["TAF", "PECT"],
+                    }
+                ],
+            }
+        ]
+    )
+
+    assert model["tables"]["events"] == {
+        "columns": [
+            "event_id",
+            "event_name",
+            "event_training_type",
+            "event_type",
+            "event_from",
+            "event_to",
+            "event_venue",
+            "event_organization",
+        ],
+        "rows": [
+            [
+                1,
+                "MOT - Managing IFRC Operations",
+                "MOT",
+                "scheduled",
+                "2024-01-01T00:00:00Z",
+                None,
+                None,
+                None,
+            ]
+        ],
+    }
+    assert model["tables"]["participants"] == {
+        "columns": [
+            "participation_id",
+            "event_id",
+            "person_id",
+            "role",
+            "participant_date",
+            "sex_or_gender",
+            "region_label",
+            "subregion_label",
+            "sending_organisation",
+            "organisation_type",
+        ],
+        "rows": [
+            [
+                1,
+                1,
+                10,
+                "participant",
+                "2024-01-02T00:00:00Z",
+                "female",
+                "Europe Region",
+                "South Europe",
+                "The Netherlands Red Cross",
+                "National Society",
+            ]
+        ],
+    }
+    assert model["tables"]["participant_languages"] == {
+        "columns": ["participation_id", "language_name"],
+        "rows": [[1, "English"], [1, "French"]],
+    }
+    assert model["tables"]["participant_training_tags"] == {
+        "columns": ["participation_id", "person_training_tag"],
+        "rows": [[1, "TAF"]],
+    }
+    assert model["tables"]["training_tag_categories"] == {
+        "columns": ["person_training_tag"],
+        "rows": [["Induction"], ["CAP"], ["ETL"], ["MOT"], ["TAF"]],
+    }
 
 
 def test_sparse_json_value_removes_only_empty_values():
