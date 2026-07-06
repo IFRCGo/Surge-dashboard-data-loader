@@ -1,7 +1,13 @@
 {
+<<<<<<< HEAD
   "started_at": "2026-07-06T12:35:20Z",
   "finished_at": "2026-07-06T12:55:40Z",
   "event_pages_fetched": 339,
+=======
+  "started_at": "2026-07-06T08:57:34Z",
+  "finished_at": "2026-07-06T08:57:39Z",
+  "event_pages_fetched": 1,
+>>>>>>> 5ef1ca16cd3aefc8865fea300363741a87108a67
   "events_processed": 5085,
   "existing_events_loaded": 0,
   "events_added": 5085,
