@@ -8,10 +8,10 @@ The main loader:
 - fetches event-organized data from `https://rrms.ifrc.org/api/api/events`
 - keeps one top-level JSON object per event
 - nests participant links inside each event
-- enriches participants with safe gender, region, National Society, and organization fields
+- enriches participants with safe gender, region, subregion, language, National Society, organization, and training/capability tag fields
 - blocks forbidden personal fields before writing output
 - supports incremental refreshes so routine runs do not reprocess the whole historical dataset
-- writes compact JSON suitable for GitHub and Power BI
+- writes compact, sparse JSON suitable for GitHub and Power BI
 
 ## Outputs
 
@@ -26,9 +26,10 @@ data/powerbi/powerbi_loader_manifest.json
 
 `powerbi_loader_manifest.json` contains run metadata such as pages fetched,
 events processed, participant links written, enrichment counts, output path,
-incremental-refresh counts, and any errors.
+incremental-refresh counts, role counts, dashboard summary tables, slicer values,
+and any errors.
 
-The production event JSON is intentionally minified. Power BI can load compact JSON normally, and the smaller file is easier to store in GitHub.
+The production event JSON is intentionally minified and omits empty/null fields. Power BI can load compact JSON normally, and the smaller file is easier to store in GitHub.
 
 Optional human-review samples may also exist:
 
@@ -74,7 +75,40 @@ MOT - Managing IFRC Operations
 Emergency Team Leader (ETL) training 2023
 ```
 
-Participant fields include only dashboard-safe values such as `person_id`, role, participation dates, gender, region, National Society, and matched organization.
+Participant fields include only dashboard-safe values such as `person_id`, role, participation dates, gender, region, subregion, language names/codes, person training/capability tags, National Society, and matched organization.
+
+Participant enrichment fields include:
+
+```text
+person_id
+role
+requested
+participant_start
+participant_end
+result
+waitlist
+sex_or_gender
+region_tag
+region_label
+subregion_tag
+subregion_label
+language_codes
+language_names
+person_training_tags
+national_society_tag
+national_society_name
+matched_organization_id
+matched_organization_name
+```
+
+`role` is the event-specific value from `event.person[].pivot.role`. Person tag group `ROLES` is not used for event participant/facilitator role because those tags describe surge or technical capabilities.
+
+`powerbi_loader_manifest.json` also includes `dashboard_summary`, with compact precomputed data for cards, visuals, and slicers. This lets Power BI build the main dashboard from small summary arrays while keeping `powerbi_training_events.json` available for detail and validation.
+
+For the reference participant visuals:
+
+- `participants_by_organisation_type` uses `National Society`, `IFRC`, and `Other`. Participants without a matched National Society or IFRC organisation are counted as `Other`.
+- `participants_by_person_training_tag` is limited to the five overview categories parsed from person tag groups `training` and `Surge Trainings`: `Induction`, `CAP`, `ETL`, `MOT`, and `TAF`.
 
 ## Endpoints Used
 
@@ -85,6 +119,7 @@ POST https://rrms.ifrc.org/api/api/login
 GET  https://rrms.ifrc.org/api/api/events?page=N
 GET  https://rrms.ifrc.org/api/api/system/organizations
 GET  https://rrms.ifrc.org/api/api/people/{person_id}/tags
+GET  https://rrms.ifrc.org/api/api/people/{person_id}/languages
 GET  https://rrms.ifrc.org/api/api/people/{person_id}
 ```
 
@@ -101,7 +136,9 @@ The separate training metrics command uses:
 GET https://rrms.staging.molnix.com/api/api/v1/training-metrics
 ```
 
-That endpoint uses the `TRAINING_METRICS_API_TOKEN` value as an API-token header.
+That command logs in with `RRMS_USERNAME` and `RRMS_PASSWORD`, then tries the
+resulting Molnix token against the endpoint with a few common auth header
+styles.
 
 ## PII Policy
 
@@ -188,6 +225,7 @@ It:
 
 - adds new events
 - replaces events when both old and new records have `event_updated_at` and the value changed
+- replaces existing events that were generated with an older participant-field schema
 - skips unchanged existing events
 - stops early when it reaches a page where all events are already known and unchanged
 

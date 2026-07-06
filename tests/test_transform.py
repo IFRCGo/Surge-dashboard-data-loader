@@ -45,6 +45,11 @@ def test_event_transform_keeps_participants_nested_and_uses_pivot():
                 "sex_or_gender": "female",
                 "region_tag": "EURO",
                 "region_label": "Europe Region",
+                "subregion_tag": "EU-SE",
+                "subregion_label": "South Europe",
+                "language_codes": ["L-ENG"],
+                "language_names": ["English"],
+                "person_training_tags": ["Induction"],
                 "national_society_tag": "RC.NL",
                 "national_society_name": "The Netherlands Red Cross",
                 "matched_organization_id": 124,
@@ -71,6 +76,11 @@ def test_event_transform_keeps_participants_nested_and_uses_pivot():
             "sex_or_gender": "female",
             "region_tag": "EURO",
             "region_label": "Europe Region",
+            "subregion_tag": "EU-SE",
+            "subregion_label": "South Europe",
+            "language_codes": ["L-ENG"],
+            "language_names": ["English"],
+            "person_training_tags": ["Induction"],
             "national_society_tag": "RC.NL",
             "national_society_name": "The Netherlands Red Cross",
             "matched_organization_id": 124,
@@ -96,7 +106,10 @@ def test_enrich_person_extracts_region_ns_and_prefers_rc_org_match():
     lookup = build_organization_lookup(organizations)
 
     enriched = enrich_person(
-        person_tags=[{"id": 1, "name": "EURO"}, {"id": 2, "name": "RC.NL"}],
+        person_tags=[
+            {"id": 1, "name": "EURO", "groups": ["REGION"]},
+            {"id": 2, "name": "RC.NL", "groups": ["NATIONAL SOCIETIES"]},
+        ],
         person_detail={"gender": {"name": "female"}, "email": "ignored@example.org"},
         organization_lookup=lookup,
     )
@@ -107,6 +120,41 @@ def test_enrich_person_extracts_region_ns_and_prefers_rc_org_match():
     assert enriched["national_society_name"] == "The Netherlands Red Cross"
     assert enriched["matched_organization_id"] == 124
     assert enriched["sex_or_gender"] == "female"
+
+
+def test_enrich_person_extracts_tag_groups_languages_and_training_tags():
+    lookup = build_organization_lookup([])
+
+    enriched = enrich_person(
+        person_tags=[
+            {
+                "id": 1,
+                "name": "AP-Pacific",
+                "description": "ASIAP Sub-region: Pacific",
+                "groups": ["SUB-REGION"],
+            },
+            {"id": 2, "name": "L-ENG", "description": "English", "groups": ["LANGUAGE"]},
+            {"id": 3, "name": "L-FRA", "description": "French", "groups": ["LANGUAGE"]},
+            {
+                "id": 4,
+                "name": "TAF",
+                "description": "Train. Assess. Facilitate. (TAF) Training",
+                "groups": ["training", "Surge Trainings"],
+            },
+        ],
+        person_languages=[
+            {"language": "English", "language_id": 1},
+            {"language": {"name": "French"}, "language_id": 2},
+        ],
+        person_detail={},
+        organization_lookup=lookup,
+    )
+
+    assert enriched["subregion_tag"] == "AP-Pacific"
+    assert enriched["subregion_label"] == "Pacific"
+    assert enriched["language_codes"] == ["L-ENG", "L-FRA"]
+    assert enriched["language_names"] == ["English", "French"]
+    assert enriched["person_training_tags"] == ["TAF"]
 
 
 def test_extract_sex_or_gender_uses_only_allowed_fields():

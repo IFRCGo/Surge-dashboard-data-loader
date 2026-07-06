@@ -8,11 +8,14 @@ from typing import Any
 
 REGION_LABELS = {
     "AFRICA": "Africa Region",
+    "AMER": "Americas Region",
     "AMERICAS": "Americas Region",
     "ASIAP": "Asia Pacific Region",
     "EURO": "Europe Region",
     "MENA": "Middle East and North Africa Region",
 }
+
+LANGUAGE_CODE_PREFIX = "L-"
 
 EVENT_TAG_STOPWORDS = {
     "A",
@@ -143,6 +146,11 @@ def transform_participant(
         "sex_or_gender": enrichment.get("sex_or_gender"),
         "region_tag": enrichment.get("region_tag"),
         "region_label": enrichment.get("region_label"),
+        "subregion_tag": enrichment.get("subregion_tag"),
+        "subregion_label": enrichment.get("subregion_label"),
+        "language_codes": enrichment.get("language_codes", []),
+        "language_names": enrichment.get("language_names", []),
+        "person_training_tags": enrichment.get("person_training_tags", []),
         "national_society_tag": enrichment.get("national_society_tag"),
         "national_society_name": enrichment.get("national_society_name"),
         "matched_organization_id": enrichment.get("matched_organization_id"),
@@ -168,16 +176,41 @@ def enrich_person(
     *,
     person_tags: list[dict[str, Any]],
     person_detail: Mapping[str, Any] | None,
+    person_languages: list[dict[str, Any]] | None = None,
     organization_lookup: OrganizationLookup,
 ) -> dict[str, Any]:
-    tag_names = [normalize_tag_name(tag) for tag in person_tags]
-    region_tag = next((tag for tag in tag_names if tag in REGION_LABELS), None)
-    ns_tag = next((tag for tag in tag_names if tag.startswith("RC.")), None)
+    region_tag = first_tag_name_in_group(person_tags, "REGION", allowed_values=set(REGION_LABELS))
+    if region_tag is None:
+        tag_names = [normalize_tag_name(tag) for tag in person_tags]
+        region_tag = next((tag for tag in tag_names if tag in REGION_LABELS), None)
+
+    subregion_tag_obj = first_tag_in_group(person_tags, "SUB-REGION")
+    subregion_tag = tag_display_name(subregion_tag_obj)
+    subregion_label = subregion_label_from_tag(subregion_tag_obj)
+
+    ns_tag = first_tag_name_in_group(person_tags, "NATIONAL SOCIETIES", prefix="RC.")
+    if ns_tag is None:
+        tag_names = [normalize_tag_name(tag) for tag in person_tags]
+        ns_tag = next((tag for tag in tag_names if tag.startswith("RC.")), None)
+
+    language_codes, tag_language_names = extract_language_tags(person_tags)
+    language_names = unique_nonblank(
+        [
+            *extract_language_names(person_languages or []),
+            *tag_language_names,
+        ]
+    )
+    person_training_tags = extract_person_training_tags(person_tags)
     org_match, match_method = match_organization(person_tags, organization_lookup)
     return {
         "sex_or_gender": extract_sex_or_gender(person_detail or {}),
         "region_tag": region_tag,
         "region_label": REGION_LABELS.get(region_tag) if region_tag else None,
+        "subregion_tag": subregion_tag,
+        "subregion_label": subregion_label,
+        "language_codes": language_codes,
+        "language_names": language_names,
+        "person_training_tags": person_training_tags,
         "national_society_tag": ns_tag,
         "national_society_name": org_match.get("organization_name") if ns_tag and org_match else None,
         "matched_organization_id": org_match.get("organization_id") if org_match else None,
@@ -222,6 +255,141 @@ def extract_sex_or_gender(person_detail: Mapping[str, Any]) -> Any:
     if isinstance(value, Mapping):
         return value.get("name") or value.get("label") or value.get("value")
     return value
+
+
+def first_tag_in_group(
+    tags: list[dict[str, Any]],
+    group_name: str,
+    *,
+    allowed_values: set[str] | None = None,
+    prefix: str | None = None,
+) -> dict[str, Any] | None:
+    for tag in tags:
+        tag_name = normalize_tag_name(tag)
+        if not tag_name:
+            continue
+        if not tag_has_group(tag, group_name):
+            continue
+        if allowed_values is not None and tag_name not in allowed_values:
+            continue
+        if prefix is not None and not tag_name.startswith(prefix):
+            continue
+        return tag
+    return None
+
+
+def first_tag_name_in_group(
+    tags: list[dict[str, Any]],
+    group_name: str,
+    *,
+    allowed_values: set[str] | None = None,
+    prefix: str | None = None,
+) -> str | None:
+    tag = first_tag_in_group(tags, group_name, allowed_values=allowed_values, prefix=prefix)
+    return normalize_tag_name(tag) if tag else None
+
+
+def tag_has_group(tag: Mapping[str, Any], group_name: str) -> bool:
+    expected = normalize_group_name(group_name)
+    return any(normalize_group_name(group) == expected for group in tag_groups(tag))
+
+
+def tag_groups(tag: Mapping[str, Any]) -> list[str]:
+    groups = tag.get("groups") or tag.get("group")
+    if isinstance(groups, str):
+        return [groups]
+    if isinstance(groups, Mapping):
+        return [str(display_value(groups) or "")]
+    if not isinstance(groups, list):
+        return []
+    output: list[str] = []
+    for group in groups:
+        if isinstance(group, Mapping):
+            value = display_value(group)
+            if value:
+                output.append(str(value))
+        elif group not in (None, ""):
+            output.append(str(group))
+    return output
+
+
+def normalize_group_name(value: Any) -> str:
+    return normalize_text(value).replace("_", "-")
+
+
+def subregion_label_from_tag(tag: Mapping[str, Any] | None) -> str | None:
+    if tag is None:
+        return None
+    description = display_value(tag.get("description"))
+    if isinstance(description, str) and description.strip():
+        if ":" in description:
+            return description.split(":", 1)[1].strip() or None
+        return description.strip()
+    tag_name = normalize_tag_name(tag)
+    return tag_name or None
+
+
+def tag_display_name(tag: Mapping[str, Any] | None) -> str | None:
+    if tag is None:
+        return None
+    value = display_value(tag.get("name") or tag.get("label") or tag.get("tag_name"))
+    if value in (None, ""):
+        return None
+    return str(value).strip()
+
+
+def extract_language_tags(tags: list[dict[str, Any]]) -> tuple[list[str], list[str]]:
+    codes: list[str] = []
+    names: list[str] = []
+    for tag in tags:
+        tag_name = normalize_tag_name(tag)
+        if not tag_name:
+            continue
+        if not tag_has_group(tag, "LANGUAGE") and not tag_name.startswith(LANGUAGE_CODE_PREFIX):
+            continue
+        codes.append(tag_name)
+        description = display_value(tag.get("description"))
+        if description:
+            names.append(str(description).strip())
+    return unique_nonblank(codes), unique_nonblank(names)
+
+
+def extract_language_names(languages: list[dict[str, Any]]) -> list[str]:
+    names: list[str] = []
+    for language in languages:
+        value = language.get("language")
+        if isinstance(value, Mapping):
+            label = display_value(value)
+        else:
+            label = display_value(value)
+        if label:
+            names.append(str(label).strip())
+    return unique_nonblank(names)
+
+
+def extract_person_training_tags(tags: list[dict[str, Any]]) -> list[str]:
+    training_tags: list[str] = []
+    for tag in tags:
+        if not (tag_has_group(tag, "training") or tag_has_group(tag, "Surge Trainings")):
+            continue
+        tag_name = display_value(tag.get("name") or tag.get("label") or tag.get("tag_name"))
+        if tag_name:
+            training_tags.append(str(tag_name).strip())
+    return unique_nonblank(training_tags)
+
+
+def unique_nonblank(values: list[Any]) -> list[str]:
+    seen: set[str] = set()
+    output: list[str] = []
+    for value in values:
+        if value in (None, ""):
+            continue
+        text = str(value).strip()
+        if not text or text in seen:
+            continue
+        seen.add(text)
+        output.append(text)
+    return output
 
 
 def display_value(value: Any) -> Any:

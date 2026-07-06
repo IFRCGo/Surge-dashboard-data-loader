@@ -52,6 +52,10 @@ class RRMSClient:
         payload = self._request_json("GET", self.people_url(person_id, suffix="tags"))
         return extract_list_payload(payload)
 
+    def fetch_person_languages(self, person_id: int) -> list[JsonObject]:
+        payload = self._request_json("GET", self.people_url(person_id, suffix="languages"))
+        return extract_list_payload(payload)
+
     def fetch_person_detail(self, person_id: int) -> JsonObject:
         payload = self._request_json("GET", self.people_url(person_id))
         if isinstance(payload, Mapping) and isinstance(payload.get("data"), Mapping):
@@ -156,7 +160,7 @@ def extract_list_payload(payload: Any) -> list[JsonObject]:
     if not isinstance(payload, Mapping):
         return []
     candidates = [payload.get("data"), payload.get("results"), payload.get("items")]
-    for wrapper_key in ("events", "organizations", "people", "tags"):
+    for wrapper_key in ("events", "organizations", "people", "tags", "languages"):
         wrapper = payload.get(wrapper_key)
         if isinstance(wrapper, Mapping):
             candidates.extend([wrapper.get("data"), wrapper.get("results"), wrapper.get("items")])
