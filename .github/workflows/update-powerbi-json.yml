@@ -23,6 +23,9 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v4
 
+      - name: Run tests
+        run: uv run --extra dev pytest -q
+
       - name: Run loader
         env:
           RRMS_USERNAME: ${{ secrets.RRMS_USERNAME }}
@@ -31,12 +34,20 @@ jobs:
           RRMS_REQUEST_RETRIES: "5"
         run: uv run python scripts/build_powerbi_json.py --all-pages --incremental --verbose --person-workers 4
 
-      - name: Validate output sizes
+      - name: Validate Power BI outputs
         shell: bash
         run: |
+          set -euo pipefail
           max_bytes=100000000
-          for file in data/powerbi/*.json; do
-            [ -f "$file" ] || continue
+          files=(
+            data/powerbi/powerbi_training_events.json
+            data/powerbi/powerbi_loader_manifest.json
+          )
+          for file in "${files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "::error::$file was not created."
+              exit 1
+            fi
             size=$(wc -c < "$file")
             echo "$file: $size bytes"
             if [ "$size" -gt "$max_bytes" ]; then
@@ -44,20 +55,34 @@ jobs:
               exit 1
             fi
           done
+          PYTHONPATH=src uv run python - <<'PY'
+          import json
+          from pathlib import Path
+          from surge_data_loader.pii import validate_no_forbidden_fields
+
+          events_path = Path("data/powerbi/powerbi_training_events.json")
+          manifest_path = Path("data/powerbi/powerbi_loader_manifest.json")
+          events = json.loads(events_path.read_text(encoding="utf-8"))
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          if not isinstance(events, list):
+              raise SystemExit("powerbi_training_events.json must be a JSON array.")
+          if not isinstance(manifest, dict):
+              raise SystemExit("powerbi_loader_manifest.json must be a JSON object.")
+          if "dashboard_summary" not in manifest:
+              raise SystemExit("powerbi_loader_manifest.json is missing dashboard_summary.")
+          if "participant_role_counts" not in manifest:
+              raise SystemExit("powerbi_loader_manifest.json is missing participant_role_counts.")
+          validate_no_forbidden_fields(events)
+          validate_no_forbidden_fields(manifest)
+          PY
 
       - name: Commit updated JSON outputs
         run: |
-          if [ ! -d data/powerbi ]; then
-            echo "No data/powerbi directory found."
-            exit 0
-          fi
-          if ! find data/powerbi -maxdepth 1 -name "*.json" | grep -q .; then
-            echo "No JSON outputs found."
-            exit 0
-          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f data/powerbi/*.json
+          git add -f \
+            data/powerbi/powerbi_training_events.json \
+            data/powerbi/powerbi_loader_manifest.json
           if git diff --cached --quiet; then
             echo "No JSON changes to commit."
             exit 0
