@@ -14,3 +14,4 @@ build/
 *.egg-info/
 data/powerbi/*.tmp
 data/powerbi/*.log
+reference_visuals/
