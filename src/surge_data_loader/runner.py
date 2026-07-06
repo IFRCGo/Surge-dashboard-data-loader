@@ -123,9 +123,7 @@ def run_loader(
     ]
     output_events = merge_events(existing_events, transformed_events) if incremental else transformed_events
     manifest["events_processed"] = len(output_events)
-    manifest["participant_links_written_inside_events"] = sum(
-        len(event["participants"]) for event in output_events
-    )
+    manifest["participant_links_written_inside_events"] = count_participant_links(output_events)
     role_counts = count_roles(output_events)
     manifest["participant_role_counts"] = dict(sorted(role_counts.items()))
     manifest["non_participant_role_links"] = sum(
@@ -300,6 +298,10 @@ def count_roles(events: list[dict[str, Any]]) -> Counter[str]:
             role = participant.get("role") or "(blank)"
             counts[str(role)] += 1
     return counts
+
+
+def count_participant_links(events: list[dict[str, Any]]) -> int:
+    return sum(len(event.get("participants", []) or []) for event in events)
 
 
 def build_dashboard_summary(events: list[dict[str, Any]]) -> dict[str, Any]:

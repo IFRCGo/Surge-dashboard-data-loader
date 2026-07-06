@@ -1,6 +1,7 @@
 from surge_data_loader.runner import (
     build_dashboard_summary,
     build_trainings_facilitator_model,
+    count_participant_links,
     event_changed,
     merge_events,
     sparse_json_value,
@@ -46,6 +47,19 @@ def test_merge_events_replaces_existing_event_and_appends_new_event():
 
     assert {event["event_id"] for event in merged} == {1, 2, 3}
     assert next(event for event in merged if event["event_id"] == 1)["event_name"] == "new"
+
+
+def test_count_participant_links_treats_missing_participants_as_empty():
+    assert (
+        count_participant_links(
+            [
+                {"event_id": 1, "participants": [{"person_id": 10}]},
+                {"event_id": 2},
+                {"event_id": 3, "participants": []},
+            ]
+        )
+        == 1
+    )
 
 
 def test_build_dashboard_summary_includes_visuals_and_slicers():
