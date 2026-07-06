@@ -1,22 +1,16 @@
 {
-<<<<<<< HEAD
-  "started_at": "2026-07-06T12:35:20Z",
-  "finished_at": "2026-07-06T12:55:40Z",
-  "event_pages_fetched": 339,
-=======
-  "started_at": "2026-07-06T08:57:34Z",
-  "finished_at": "2026-07-06T08:57:39Z",
-  "event_pages_fetched": 1,
->>>>>>> 5ef1ca16cd3aefc8865fea300363741a87108a67
+  "started_at": "2026-07-06T14:08:17Z",
+  "finished_at": "2026-07-06T14:17:50Z",
+  "event_pages_fetched": 142,
   "events_processed": 5085,
-  "existing_events_loaded": 0,
-  "events_added": 5085,
-  "events_replaced": 0,
-  "events_skipped_existing": 0,
-  "incremental": false,
-  "stopped_after_existing_page": false,
+  "existing_events_loaded": 5085,
+  "events_added": 0,
+  "events_replaced": 2079,
+  "events_skipped_existing": 51,
+  "incremental": true,
+  "stopped_after_existing_page": true,
   "participant_links_written_inside_events": 209045,
-  "unique_person_ids_enriched": 6796,
+  "unique_person_ids_enriched": 3071,
   "organizations_loaded": 204,
   "personal_fields_saved": false,
   "output_schema_version": 2,
@@ -3296,5 +3290,15 @@
         ]
       }
     }
+  },
+  "model_file": "data/powerbi/trainings_facilitator_model.json",
+  "model_schema_version": 1,
+  "model_counts": {
+    "events": 5085,
+    "participants": 209045,
+    "participant_languages": 313242,
+    "participant_training_tags": 34827,
+    "training_tag_categories": 5,
+    "organisation_type_categories": 3
   }
 }
