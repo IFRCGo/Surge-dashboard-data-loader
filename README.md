@@ -183,11 +183,12 @@ The separate training metrics command uses:
 
 ```text
 GET https://rrms.staging.molnix.com/api/api/v1/training-metrics
+Api-Token: <TRAINING_METRICS_API_TOKEN with hyphens removed>
 ```
 
-That command logs in with `RRMS_USERNAME` and `RRMS_PASSWORD`, then tries the
-resulting Molnix token against the endpoint with a few common auth header
-styles.
+That command uses `TRAINING_METRICS_API_TOKEN` directly. Hyphens are stripped
+from the token before the request because the live endpoint accepts the token
+without the hyphen.
 
 ## PII Policy
 
@@ -234,6 +235,13 @@ Optional tuning:
 ```text
 RRMS_PERSON_WORKERS=4
 RRMS_REQUEST_RETRIES=5
+```
+
+Training metrics:
+
+```text
+TRAINING_METRICS_URL=https://rrms.staging.molnix.com/api/api/v1/training-metrics
+TRAINING_METRICS_API_TOKEN=your_training_metrics_api_token
 ```
 
 The loader calls `POST https://rrms.ifrc.org/api/api/login` on each run and keeps the access token in memory only.
@@ -293,12 +301,19 @@ Required repository secrets:
 ```text
 RRMS_USERNAME
 RRMS_PASSWORD
+TRAINING_METRICS_API_TOKEN
 ```
 
-The workflow command is:
+The workflow event-loader command is:
 
 ```powershell
 uv run python scripts/build_powerbi_json.py --all-pages --incremental --verbose --person-workers 4
+```
+
+The workflow also runs:
+
+```powershell
+uv run python scripts/fetch_training_metrics.py --incremental --verbose
 ```
 
 It validates JSON output sizes and commits changed JSON files under `data/powerbi/`.
@@ -309,6 +324,12 @@ A separate command exists for the staging training metrics endpoint:
 
 ```powershell
 uv run python scripts/fetch_training_metrics.py --verbose
+```
+
+Routine incremental metrics fetch:
+
+```powershell
+uv run python scripts/fetch_training_metrics.py --incremental --verbose
 ```
 
 It writes separate files:

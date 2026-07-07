@@ -34,6 +34,13 @@ jobs:
           RRMS_REQUEST_RETRIES: "5"
         run: uv run python scripts/build_powerbi_json.py --all-pages --incremental --verbose --person-workers 4
 
+      - name: Fetch training metrics
+        env:
+          TRAINING_METRICS_API_TOKEN: ${{ secrets.TRAINING_METRICS_API_TOKEN }}
+          TRAINING_METRICS_URL: https://rrms.staging.molnix.com/api/api/v1/training-metrics
+          RRMS_REQUEST_RETRIES: "5"
+        run: uv run python scripts/fetch_training_metrics.py --incremental --verbose
+
       - name: Validate Power BI outputs
         shell: bash
         run: |
@@ -43,6 +50,8 @@ jobs:
             data/powerbi/powerbi_training_events.json
             data/powerbi/powerbi_loader_manifest.json
             data/powerbi/trainings_facilitator_model.json
+            data/powerbi/training_metrics.json
+            data/powerbi/training_metrics_manifest.json
           )
           for file in "${files[@]}"; do
             if [ ! -f "$file" ]; then
@@ -64,27 +73,41 @@ jobs:
           events_path = Path("data/powerbi/powerbi_training_events.json")
           manifest_path = Path("data/powerbi/powerbi_loader_manifest.json")
           model_path = Path("data/powerbi/trainings_facilitator_model.json")
+          metrics_path = Path("data/powerbi/training_metrics.json")
+          metrics_manifest_path = Path("data/powerbi/training_metrics_manifest.json")
           events = json.loads(events_path.read_text(encoding="utf-8"))
           manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
           model = json.loads(model_path.read_text(encoding="utf-8"))
+          metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+          metrics_manifest = json.loads(metrics_manifest_path.read_text(encoding="utf-8"))
           if not isinstance(events, list):
               raise SystemExit("powerbi_training_events.json must be a JSON array.")
           if not isinstance(manifest, dict):
               raise SystemExit("powerbi_loader_manifest.json must be a JSON object.")
           if not isinstance(model, dict):
               raise SystemExit("trainings_facilitator_model.json must be a JSON object.")
+          if not isinstance(metrics, dict):
+              raise SystemExit("training_metrics.json must be a JSON object.")
+          if not isinstance(metrics_manifest, dict):
+              raise SystemExit("training_metrics_manifest.json must be a JSON object.")
           if "dashboard_summary" not in manifest:
               raise SystemExit("powerbi_loader_manifest.json is missing dashboard_summary.")
           if "participant_role_counts" not in manifest:
               raise SystemExit("powerbi_loader_manifest.json is missing participant_role_counts.")
           if "tables" not in model:
               raise SystemExit("trainings_facilitator_model.json is missing tables.")
+          if "metrics" not in metrics:
+              raise SystemExit("training_metrics.json is missing metrics.")
+          if "payload_sha256" not in metrics_manifest:
+              raise SystemExit("training_metrics_manifest.json is missing payload_sha256.")
           for table_name, table in model["tables"].items():
               if not isinstance(table, dict) or "columns" not in table or "rows" not in table:
                   raise SystemExit(f"{table_name} must have columns and rows.")
           validate_no_forbidden_fields(events)
           validate_no_forbidden_fields(manifest)
           validate_no_forbidden_fields(model)
+          validate_no_forbidden_fields(metrics)
+          validate_no_forbidden_fields(metrics_manifest)
           PY
 
       - name: Commit updated JSON outputs
@@ -94,7 +117,9 @@ jobs:
           git add -f \
             data/powerbi/powerbi_training_events.json \
             data/powerbi/powerbi_loader_manifest.json \
-            data/powerbi/trainings_facilitator_model.json
+            data/powerbi/trainings_facilitator_model.json \
+            data/powerbi/training_metrics.json \
+            data/powerbi/training_metrics_manifest.json
           if git diff --cached --quiet; then
             echo "No JSON changes to commit."
             exit 0

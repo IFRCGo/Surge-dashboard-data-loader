@@ -35,7 +35,7 @@ def main(argv: list[str] | None = None) -> int:
 
     load_dotenv()
     metrics_url = os.getenv("TRAINING_METRICS_URL", DEFAULT_TRAINING_METRICS_URL)
-    api_token = os.getenv("TRAINING_METRICS_API_TOKEN")
+    api_token = normalize_api_token(os.getenv("TRAINING_METRICS_API_TOKEN", ""))
     timeout = float(os.getenv("RRMS_REQUEST_TIMEOUT", "30"))
 
     print("Training metrics probe")
@@ -116,6 +116,10 @@ def is_json(body: str) -> bool:
     except json.JSONDecodeError:
         return False
     return True
+
+
+def normalize_api_token(raw_value: str) -> str:
+    return raw_value.strip().strip('"').strip("'").replace("-", "")
 
 
 if __name__ == "__main__":
