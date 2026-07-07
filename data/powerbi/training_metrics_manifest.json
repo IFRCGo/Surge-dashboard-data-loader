@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-07-07T14:46:27Z",
+  "finished_at": "2026-07-07T14:46:28Z",
+  "endpoint": "https://rrms.staging.molnix.com/api/api/v1/training-metrics",
+  "output_file": "data/powerbi/training_metrics.json",
+  "manifest_file": "data/powerbi/training_metrics_manifest.json",
+  "top_level_type": "dict",
+  "top_level_count": 4,
+  "payload_sha256": "37b1bd604f3000e00364f953d5ae6f86865d8f6f5b73431f386118979fb21784",
+  "incremental": true,
+  "existing_payload_sha256": null,
+  "unchanged_existing_output": false,
+  "output_written": true,
+  "personal_fields_saved": false,
+  "errors": []
+}
