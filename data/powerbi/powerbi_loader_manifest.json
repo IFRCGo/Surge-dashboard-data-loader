@@ -1,6 +1,6 @@
 {
-  "started_at": "2026-07-09T08:29:28Z",
-  "finished_at": "2026-07-09T08:47:39Z",
+  "started_at": "2026-07-10T08:17:53Z",
+  "finished_at": "2026-07-10T08:46:06Z",
   "event_pages_fetched": 147,
   "events_processed": 5090,
   "existing_events_loaded": 5090,
@@ -9,8 +9,8 @@
   "events_skipped_existing": 87,
   "incremental": true,
   "stopped_after_existing_page": true,
-  "participant_links_written_inside_events": 209072,
-  "unique_person_ids_enriched": 3094,
+  "participant_links_written_inside_events": 209073,
+  "unique_person_ids_enriched": 3095,
   "organizations_loaded": 204,
   "personal_fields_saved": false,
   "output_schema_version": 2,
@@ -19,7 +19,7 @@
   "duplicate_events_removed": 0,
   "duplicate_event_ids_removed": [],
   "participant_role_counts": {
-    "participant": 209071,
+    "participant": 209072,
     "trainer": 1
   },
   "non_participant_role_links": 1,
@@ -27,8 +27,8 @@
     "schema_version": 1,
     "cards": {
       "trainings": 5090,
-      "people_trained": 6805,
-      "participant_links": 209072,
+      "people_trained": 6806,
+      "participant_links": 209073,
       "avg_participant_links_per_training": 41.08,
       "avg_unique_people_per_training": 41.07
     },
@@ -41,8 +41,8 @@
         },
         {
           "gender": "female",
-          "participant_links": 59626,
-          "unique_people": 1609
+          "participant_links": 59627,
+          "unique_people": 1610
         },
         {
           "gender": "other",
@@ -68,8 +68,8 @@
         },
         {
           "region": "Americas Region",
-          "participant_links": 32397,
-          "unique_people": 944
+          "participant_links": 32398,
+          "unique_people": 945
         },
         {
           "region": "Africa Region",
@@ -78,8 +78,8 @@
         },
         {
           "region": "Middle East and North Africa Region",
-          "participant_links": 10494,
-          "unique_people": 315
+          "participant_links": 10495,
+          "unique_people": 316
         }
       ],
       "participants_by_subregion": [
@@ -110,8 +110,8 @@
         },
         {
           "subregion": "Central America",
-          "participant_links": 4465,
-          "unique_people": 111
+          "participant_links": 4466,
+          "unique_people": 112
         },
         {
           "subregion": "Pacific",
@@ -1054,8 +1054,8 @@
         },
         {
           "organisation_type": "Other",
-          "participant_links": 72368,
-          "unique_people": 2620
+          "participant_links": 72369,
+          "unique_people": 2621
         }
       ],
       "participants_by_language": [
@@ -2113,8 +2113,8 @@
         },
         {
           "training_type": "RCRC",
-          "participant_links": 61,
-          "unique_people": 58
+          "participant_links": 62,
+          "unique_people": 59
         },
         {
           "training_type": "ETL",
@@ -2535,8 +2535,8 @@
         },
         {
           "person_training_tag": "MOT",
-          "participant_links": 6565,
-          "unique_people": 103
+          "participant_links": 6566,
+          "unique_people": 104
         },
         {
           "person_training_tag": "TAF",
@@ -2547,8 +2547,8 @@
       "participants_by_role": [
         {
           "role": "participant",
-          "participant_links": 209071,
-          "unique_people": 6805
+          "participant_links": 209072,
+          "unique_people": 6806
         },
         {
           "role": "trainer",
@@ -3297,9 +3297,9 @@
   "model_schema_version": 1,
   "model_counts": {
     "events": 5090,
-    "participants": 209072,
+    "participants": 209073,
     "participant_languages": 313244,
-    "participant_training_tags": 34827,
+    "participant_training_tags": 34828,
     "training_tag_categories": 5,
     "organisation_type_categories": 3
   }
