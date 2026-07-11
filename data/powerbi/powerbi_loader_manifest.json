@@ -1,6 +1,6 @@
 {
-  "started_at": "2026-07-10T08:17:53Z",
-  "finished_at": "2026-07-10T08:46:06Z",
+  "started_at": "2026-07-11T07:08:55Z",
+  "finished_at": "2026-07-11T07:27:19Z",
   "event_pages_fetched": 147,
   "events_processed": 5090,
   "existing_events_loaded": 5090,
@@ -58,8 +58,8 @@
       "participants_by_region": [
         {
           "region": "Europe Region",
-          "participant_links": 52727,
-          "unique_people": 1440
+          "participant_links": 52728,
+          "unique_people": 1441
         },
         {
           "region": "Asia Pacific Region",
