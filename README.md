@@ -182,7 +182,7 @@ Authorization: Bearer <access_token>
 The separate training metrics command uses:
 
 ```text
-GET https://rrms.staging.molnix.com/api/api/v1/training-metrics
+GET https://rrms.ifrc.org/api/api/v1/training-metrics
 Api-Token: <TRAINING_METRICS_API_TOKEN with hyphens removed>
 ```
 
@@ -240,7 +240,7 @@ RRMS_REQUEST_RETRIES=5
 Training metrics:
 
 ```text
-TRAINING_METRICS_URL=https://rrms.staging.molnix.com/api/api/v1/training-metrics
+TRAINING_METRICS_URL=https://rrms.ifrc.org/api/api/v1/training-metrics
 TRAINING_METRICS_API_TOKEN=your_training_metrics_api_token
 ```
 
@@ -320,7 +320,7 @@ It validates JSON output sizes and commits changed JSON files under `data/powerb
 
 ## Training Metrics Endpoint
 
-A separate command exists for the staging training metrics endpoint:
+A separate command exists for the training metrics endpoint:
 
 ```powershell
 uv run python scripts/fetch_training_metrics.py --verbose

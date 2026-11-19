@@ -34,12 +34,19 @@ jobs:
           RRMS_REQUEST_RETRIES: "5"
         run: uv run python scripts/build_powerbi_json.py --all-pages --incremental --verbose --person-workers 4
 
+      # NOTE: a metrics outage must not block the RRMS training data. On failure the script writes nothing, so the committed training_metrics.json is kept.
       - name: Fetch training metrics
+        id: training_metrics
+        continue-on-error: true
         env:
           TRAINING_METRICS_API_TOKEN: ${{ secrets.TRAINING_METRICS_API_TOKEN }}
-          TRAINING_METRICS_URL: https://rrms.staging.molnix.com/api/api/v1/training-metrics
+          TRAINING_METRICS_URL: ${{ vars.TRAINING_METRICS_URL || 'https://rrms.ifrc.org/api/api/v1/training-metrics' }}
           RRMS_REQUEST_RETRIES: "5"
         run: uv run python scripts/fetch_training_metrics.py --incremental --verbose
+
+      - name: Report training metrics failure
+        if: steps.training_metrics.outcome == 'failure'
+        run: echo "::warning::Training metrics fetch failed; keeping the previous training_metrics.json and continuing with the RRMS training data."
 
       - name: Validate Power BI outputs
         shell: bash

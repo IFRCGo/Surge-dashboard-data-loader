@@ -9,7 +9,7 @@ from .training_metrics import run_training_metrics_fetch
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Fetch sanitized RRMS staging training metrics JSON."
+        description="Fetch sanitized RRMS training metrics JSON."
     )
     parser.add_argument(
         "--incremental",

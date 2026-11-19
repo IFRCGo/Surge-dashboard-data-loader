@@ -10,7 +10,7 @@ from urllib.request import Request, urlopen
 
 
 DEFAULT_TRAINING_METRICS_URL = (
-    "https://rrms.staging.molnix.com/api/api/v1/training-metrics"
+    "https://rrms.ifrc.org/api/api/v1/training-metrics"
 )
 
 

@@ -8,7 +8,7 @@ from pathlib import Path
 DEFAULT_LOGIN_URL = "https://rrms.ifrc.org/api/api/login"
 DEFAULT_EVENTS_API_ROOT = "https://rrms.ifrc.org/api/api/events"
 DEFAULT_ORGANIZATIONS_URL = "https://rrms.ifrc.org/api/api/system/organizations"
-DEFAULT_TRAINING_METRICS_URL = "https://rrms.staging.molnix.com/api/api/v1/training-metrics"
+DEFAULT_TRAINING_METRICS_URL = "https://rrms.ifrc.org/api/api/v1/training-metrics"
 
 
 @dataclass(frozen=True)
