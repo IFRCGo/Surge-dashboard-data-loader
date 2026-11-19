@@ -17,7 +17,7 @@ DEFAULT_TRAINING_METRICS_URL = (
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Probe the staging training metrics endpoint with the Api-Token "
+            "Probe the training metrics endpoint with the Api-Token "
         )
     )
     parser.add_argument(
