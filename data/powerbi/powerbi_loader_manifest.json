@@ -1,6 +1,6 @@
 {
-  "started_at": "2026-11-21T13:21:22Z",
-  "finished_at": "2026-11-21T13:48:15Z",
+  "started_at": "2026-11-22T13:13:41Z",
+  "finished_at": "2026-11-22T13:36:44Z",
   "event_pages_fetched": 149,
   "events_processed": 5121,
   "existing_events_loaded": 5121,
@@ -58,27 +58,27 @@
       "participants_by_region": [
         {
           "region": "Europe Region",
-          "participant_links": 52749,
+          "participant_links": 52783,
           "unique_people": 1467
         },
         {
           "region": "Asia Pacific Region",
-          "participant_links": 35916,
-          "unique_people": 1150
+          "participant_links": 35870,
+          "unique_people": 1146
         },
         {
           "region": "Americas Region",
-          "participant_links": 32602,
+          "participant_links": 32609,
           "unique_people": 961
         },
         {
           "region": "Africa Region",
-          "participant_links": 29524,
-          "unique_people": 1134
+          "participant_links": 29521,
+          "unique_people": 1131
         },
         {
           "region": "Middle East and North Africa Region",
-          "participant_links": 10610,
+          "participant_links": 10618,
           "unique_people": 338
         }
       ],
