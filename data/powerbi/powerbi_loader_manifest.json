@@ -1,16 +1,16 @@
 {
-  "started_at": "2026-11-23T15:50:16Z",
-  "finished_at": "2026-11-23T16:08:34Z",
+  "started_at": "2026-11-24T15:42:14Z",
+  "finished_at": "2026-11-24T16:02:18Z",
   "event_pages_fetched": 149,
-  "events_processed": 5122,
-  "existing_events_loaded": 5121,
+  "events_processed": 5123,
+  "existing_events_loaded": 5122,
   "events_added": 1,
-  "events_replaced": 2149,
-  "events_skipped_existing": 85,
+  "events_replaced": 2150,
+  "events_skipped_existing": 84,
   "incremental": true,
   "stopped_after_existing_page": true,
-  "participant_links_written_inside_events": 209472,
-  "unique_person_ids_enriched": 3178,
+  "participant_links_written_inside_events": 209473,
+  "unique_person_ids_enriched": 3176,
   "organizations_loaded": 204,
   "personal_fields_saved": false,
   "output_schema_version": 2,
@@ -19,29 +19,29 @@
   "duplicate_events_removed": 0,
   "duplicate_event_ids_removed": [],
   "participant_role_counts": {
-    "participant": 209471,
+    "participant": 209472,
     "trainer": 1
   },
   "non_participant_role_links": 1,
   "dashboard_summary": {
     "schema_version": 1,
     "cards": {
-      "trainings": 5122,
+      "trainings": 5123,
       "people_trained": 6881,
-      "participant_links": 209472,
-      "avg_participant_links_per_training": 40.9,
-      "avg_unique_people_per_training": 40.9
+      "participant_links": 209473,
+      "avg_participant_links_per_training": 40.89,
+      "avg_unique_people_per_training": 40.89
     },
     "visuals": {
       "participants_by_gender": [
         {
           "gender": "male",
-          "participant_links": 74700,
+          "participant_links": 74703,
           "unique_people": 2207
         },
         {
           "gender": "female",
-          "participant_links": 59871,
+          "participant_links": 59876,
           "unique_people": 1644
         },
         {
@@ -63,17 +63,17 @@
         },
         {
           "region": "Asia Pacific Region",
-          "participant_links": 35870,
+          "participant_links": 35873,
           "unique_people": 1146
         },
         {
           "region": "Americas Region",
-          "participant_links": 32678,
+          "participant_links": 32679,
           "unique_people": 963
         },
         {
           "region": "Africa Region",
-          "participant_links": 29527,
+          "participant_links": 29531,
           "unique_people": 1132
         },
         {
@@ -162,7 +162,7 @@
         },
         {
           "sending_organisation": "German Red Cross",
-          "participant_links": 6563,
+          "participant_links": 6564,
           "unique_people": 128
         },
         {
@@ -177,7 +177,7 @@
         },
         {
           "sending_organisation": "British Red Cross",
-          "participant_links": 4670,
+          "participant_links": 4673,
           "unique_people": 118
         },
         {
@@ -412,7 +412,7 @@
         },
         {
           "sending_organisation": "Malawi Red Cross Society",
-          "participant_links": 588,
+          "participant_links": 592,
           "unique_people": 23
         },
         {
@@ -1044,7 +1044,7 @@
       "participants_by_organisation_type": [
         {
           "organisation_type": "National Society",
-          "participant_links": 107573,
+          "participant_links": 107581,
           "unique_people": 3520
         },
         {
@@ -1054,29 +1054,29 @@
         },
         {
           "organisation_type": "Other",
-          "participant_links": 72399,
+          "participant_links": 72392,
           "unique_people": 2666
         }
       ],
       "participants_by_language": [
         {
           "language": "English",
-          "participant_links": 101088,
+          "participant_links": 101096,
           "unique_people": 2705
         },
         {
           "language": "French",
-          "participant_links": 49614,
+          "participant_links": 49615,
           "unique_people": 1262
         },
         {
           "language": "Spanish",
-          "participant_links": 38373,
+          "participant_links": 38374,
           "unique_people": 887
         },
         {
           "language": "Arabic",
-          "participant_links": 15949,
+          "participant_links": 15952,
           "unique_people": 434
         },
         {
@@ -1086,7 +1086,7 @@
         },
         {
           "language": "Portuguese",
-          "participant_links": 9090,
+          "participant_links": 9091,
           "unique_people": 219
         },
         {
@@ -2557,7 +2557,7 @@
       "participants_by_role": [
         {
           "role": "participant",
-          "participant_links": 209471,
+          "participant_links": 209472,
           "unique_people": 6881
         },
         {
@@ -2569,8 +2569,8 @@
       "trainings_by_event_type": [
         {
           "event_type": "ondemand",
-          "event_count": 5065,
-          "unique_events": 5065
+          "event_count": 5066,
+          "unique_events": 5066
         },
         {
           "event_type": "scheduled",
@@ -3314,9 +3314,9 @@
   "model_file": "data/powerbi/trainings_facilitator_model.json",
   "model_schema_version": 1,
   "model_counts": {
-    "events": 5122,
-    "participants": 209472,
-    "participant_languages": 314714,
+    "events": 5123,
+    "participants": 209473,
+    "participant_languages": 314728,
     "participant_training_tags": 32000,
     "training_tag_categories": 5,
     "organisation_type_categories": 3
