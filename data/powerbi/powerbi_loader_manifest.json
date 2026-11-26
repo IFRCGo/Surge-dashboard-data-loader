@@ -1,6 +1,6 @@
 {
-  "started_at": "2026-11-25T15:26:46Z",
-  "finished_at": "2026-11-25T15:45:35Z",
+  "started_at": "2026-11-26T14:56:52Z",
+  "finished_at": "2026-11-26T15:15:56Z",
   "event_pages_fetched": 149,
   "events_processed": 5123,
   "existing_events_loaded": 5123,
@@ -9,7 +9,7 @@
   "events_skipped_existing": 84,
   "incremental": true,
   "stopped_after_existing_page": true,
-  "participant_links_written_inside_events": 209473,
+  "participant_links_written_inside_events": 209474,
   "unique_person_ids_enriched": 3173,
   "organizations_loaded": 204,
   "personal_fields_saved": false,
@@ -19,7 +19,7 @@
   "duplicate_events_removed": 0,
   "duplicate_event_ids_removed": [],
   "participant_role_counts": {
-    "participant": 209472,
+    "participant": 209473,
     "trainer": 1
   },
   "non_participant_role_links": 1,
@@ -28,7 +28,7 @@
     "cards": {
       "trainings": 5123,
       "people_trained": 6880,
-      "participant_links": 209473,
+      "participant_links": 209474,
       "avg_participant_links_per_training": 40.89,
       "avg_unique_people_per_training": 40.89
     },
@@ -36,7 +36,7 @@
       "participants_by_gender": [
         {
           "gender": "male",
-          "participant_links": 74703,
+          "participant_links": 74704,
           "unique_people": 2207
         },
         {
@@ -73,7 +73,7 @@
         },
         {
           "region": "Africa Region",
-          "participant_links": 29549,
+          "participant_links": 29550,
           "unique_people": 1132
         },
         {
@@ -332,7 +332,7 @@
         },
         {
           "sending_organisation": "Red Cross Society of Côte d'Ivoire",
-          "participant_links": 1090,
+          "participant_links": 1091,
           "unique_people": 35
         },
         {
@@ -1044,7 +1044,7 @@
       "participants_by_organisation_type": [
         {
           "organisation_type": "National Society",
-          "participant_links": 107615,
+          "participant_links": 107616,
           "unique_people": 3520
         },
         {
@@ -1066,7 +1066,7 @@
         },
         {
           "language": "French",
-          "participant_links": 49634,
+          "participant_links": 49635,
           "unique_people": 1263
         },
         {
@@ -2557,7 +2557,7 @@
       "participants_by_role": [
         {
           "role": "participant",
-          "participant_links": 209472,
+          "participant_links": 209473,
           "unique_people": 6880
         },
         {
@@ -3287,7 +3287,7 @@
       ],
       "time": {
         "min": "2009-09-04T09:29:51.000000Z",
-        "max": "2026-10-31T13:20:33.000000Z",
+        "max": "2026-11-09T17:43:12.000000Z",
         "years": [
           "2009",
           "2010",
@@ -3315,8 +3315,8 @@
   "model_schema_version": 1,
   "model_counts": {
     "events": 5123,
-    "participants": 209473,
-    "participant_languages": 314778,
+    "participants": 209474,
+    "participant_languages": 314779,
     "participant_training_tags": 32000,
     "training_tag_categories": 5,
     "organisation_type_categories": 3
